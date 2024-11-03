@@ -32,7 +32,9 @@ app.use((req, res, next) => {
 app.options('*', cors());
 
 // Import the routes defined in index.js
-require('./index')(app); // Pass the app instance to index.js
+const setupRoutes = require('./index');
+setupRoutes(app);
+
 
 // Start the server
 app.listen(PORT, () => {
