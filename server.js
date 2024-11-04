@@ -17,14 +17,10 @@ app.use(cors({
     credentials: true // Enable credentials for CORS
 }));
 
-// Add CORS debugging headers
+// Log incoming requests and their headers
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-    console.log("CORS allowed origin:", process.env.FRONTEND_URL || 'http://localhost:3000');
-    console.log("Request headers set for CORS:");
-    console.log(res.getHeaders());
+    console.log(`Incoming request from ${req.headers.origin}`);
+    console.log("Request headers:", req.headers);
     next();
 });
 
@@ -32,10 +28,8 @@ app.use((req, res, next) => {
 app.options('*', cors());
 
 // Import the routes defined in index.js
-
 const setupRoutes = require('./index');
 setupRoutes(app);
-
 
 // Start the server
 app.listen(PORT, () => {
