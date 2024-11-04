@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Enable CORS with specific configuration for credentials
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Use FRONTEND_URL from environment variables or default to localhost
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Allow requests from specified origin
     credentials: true // Enable credentials for CORS
 }));
 
@@ -24,8 +24,8 @@ app.use((req, res, next) => {
     next();
 });
 
-// Handle OPTIONS requests explicitly if needed
-app.options('*', cors());
+// Handle OPTIONS requests explicitly
+app.options('*', cors()); // This will enable preflight checks
 
 // Import the routes defined in index.js
 const setupRoutes = require('./index');

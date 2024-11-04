@@ -3,8 +3,6 @@ const db = require('./db');
 
 // Function to set up routes
 const setupRoutes = (app) => {
-    app.use(express.json()); // Middleware to parse JSON requests
-
     // Login route
     app.post('/login', async (req, res) => {
         const { username, password } = req.body;
