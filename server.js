@@ -26,8 +26,8 @@ app.use((req, res, next) => {
 });
 
 // Import the test connection route
-const testConnection = require('./test-connection'); // Adjust the path if necessary
-app.use('/test-connection', testConnection);
+const testConnection = require('./testconnection'); // Adjust the path if necessary
+app.use('/testconnection', testConnection);
 
 // Import the routes defined in index.js (if you have one)
 const setupRoutes = require('./index');
