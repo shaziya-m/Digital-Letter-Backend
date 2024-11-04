@@ -1,15 +1,16 @@
-const mysql = require('mysql');
+const { Client } = require('pg');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const connection = mysql.createConnection({
+const client = new Client({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+   
 });
 
-connection.connect((err) => {
+client.connect(err => {
     if (err) {
         console.error('Database connection failed:', err.stack);
         return;
@@ -17,4 +18,4 @@ connection.connect((err) => {
     console.log('Connected to database.');
 });
 
-module.exports = connection;
+module.exports = client;

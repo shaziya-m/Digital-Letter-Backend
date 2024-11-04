@@ -13,16 +13,16 @@ app.use(express.json());
 
 // Enable CORS with specific configuration for credentials
 app.use(cors({
-    origin: 'https://digital-letter-pearl.vercel.app' || 'http://localhost:3000', // Use FRONTEND_URL from environment variables or default to localhost
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Use FRONTEND_URL from environment variables or default to localhost
     credentials: true // Enable credentials for CORS
 }));
 
 // Add CORS debugging headers
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://digital-letter-pearl.vercel.app' || 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-    console.log("CORS allowed origin:", 'https://digital-letter-pearl.vercel.app' || 'http://localhost:3000');
+    console.log("CORS allowed origin:", process.env.FRONTEND_URL || 'http://localhost:3000');
     console.log("Request headers set for CORS:");
     console.log(res.getHeaders());
     next();

@@ -6,7 +6,7 @@ const setupRoutes = (app) => {
     app.use(express.json()); // Middleware to parse JSON requests
 
     // Login route
-    app.post('/login', (req, res) => {
+    app.post('/login', async (req, res) => {
         const { username, password } = req.body;
 
         // Check if username and password are provided
@@ -14,26 +14,27 @@ const setupRoutes = (app) => {
             return res.status(400).json({ error: 'Username and password are required' });
         }
 
-        const query = `CALL LoginUser(?, ?);`;
-        db.query(query, [username, password], (err, results) => {
-            if (err) {
-                console.error('Error executing login procedure:', err.message); // Log specific error message
-                return res.status(500).json({ error: 'Database error', details: err.message }); // Send detailed error message
-            }
+        const query = `SELECT login_user($1, $2) AS message;`;
+
+        try {
+            const result = await db.query(query, [username, password]);
 
             // Check if results are as expected
-            if (results && results[0] && results[0].length > 0) {
-                const response = results[0][0];
-                if (response.message === 'Login successful') {
+            if (result.rows.length > 0) {
+                const response = result.rows[0].message; // Access the message field from the response
+                if (response === 'Login successful') {
                     return res.json({ message: 'Login successful' });
                 } else {
                     return res.json({ message: 'Invalid username or password' });
                 }
             } else {
-                console.warn('Unexpected result format from database:', results); // Warn if unexpected format
+                console.warn('Unexpected result format from database:', result); // Warn if unexpected format
                 return res.status(500).json({ error: 'Unexpected database response' });
             }
-        });
+        } catch (err) {
+            console.error('Error executing login procedure:', err.message); // Log specific error message
+            return res.status(500).json({ error: 'Database error', details: err.message }); // Send detailed error message
+        }
     });
 };
 
