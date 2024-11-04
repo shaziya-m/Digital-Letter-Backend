@@ -1,40 +1,41 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
+const cors = require('cors'); // Import the CORS package
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Enable CORS with specific configuration for credentials
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Allow the frontend URL or localhost for development
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
-    credentials: true
-}));
+const PORT = process.env.PORT || 5000; // Use environment variable or default to 5000
 
 // Middleware to parse JSON requests
 app.use(express.json());
 
-// Logging middleware to track requests and methods
+// Enable CORS with specific configuration for credentials
+app.use(cors({
+    origin: 'https://digital-letter-pearl.vercel.app' || 'http://localhost:3000', // Use FRONTEND_URL from environment variables or default to localhost
+    credentials: true // Enable credentials for CORS
+}));
+
+// Add CORS debugging headers
 app.use((req, res, next) => {
-    console.log(`${req.method} request for ${req.url}`);
+    res.setHeader('Access-Control-Allow-Origin', 'https://digital-letter-pearl.vercel.app' || 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+    console.log("CORS allowed origin:", 'https://digital-letter-pearl.vercel.app' || 'http://localhost:3000');
+    console.log("Request headers set for CORS:");
+    console.log(res.getHeaders());
     next();
 });
 
-// Import the test connection route
-const testConnection = require('./testconnection'); // Adjust the path if necessary
-app.use('/testconnection', testConnection);
+// Handle OPTIONS requests explicitly if needed
+app.options('*', cors());
 
-// Import the routes defined in index.js (if you have one)
+// Import the routes defined in index.js
+
 const setupRoutes = require('./index');
 setupRoutes(app);
 
-// Handle OPTIONS preflight requests
-app.options('*', cors());
 
 // Start the server
 app.listen(PORT, () => {
