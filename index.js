@@ -94,12 +94,16 @@ const setupRoutes = (app) => {
     
         try {
             const result = await db.query(query, [userId]);
-            
+    
             // Check if there are any results and return them as an array
             if (result.rows.length > 0) {
                 const unreadLetters = result.rows.map(row => ({
                     read_status: row.read_status,
-                    sendername: row.sendername
+                    senderid: row.senderid,
+                    sendername: row.sendername,
+                    letterid: row.letterid,
+                    sendercountry: row.sendercountry,
+                    receivercountry: row.receivercountry
                 }));
                 res.json(unreadLetters); // Return the data as an array of objects
             } else {
@@ -107,6 +111,31 @@ const setupRoutes = (app) => {
             }
         } catch (err) {
             console.error('Error fetching read status:', err.message);
+            res.status(500).json({ error: 'Database error', details: err.message });
+        }
+    });
+     // Route to get letter content (read only if unread)
+     app.get('/api/get-letter', async (req, res) => {
+        const { letterid } = req.query; // Use the query parameter correctly
+    
+        if (!letterid) {
+            return res.status(400).json({ error: 'Letter ID is required' });
+        }
+    
+        const query = `SELECT * FROM get_letter($1);`; // Make sure you're calling the stored procedure correctly
+    
+        try {
+            const result = await db.query(query, [letterid]);
+    
+            // If result is found, return the content and sent_time
+            if (result.rows.length > 0) {
+                const { content, sent_time } = result.rows[0];
+                res.json({ content, sentTime: sent_time }); // Return the content and sent_time
+            } else {
+                res.status(404).json({ error: 'Letter not found or already read' });
+            }
+        } catch (err) {
+            console.error('Error fetching letter:', err.message);
             res.status(500).json({ error: 'Database error', details: err.message });
         }
     });
