@@ -139,6 +139,26 @@ const setupRoutes = (app) => {
             res.status(500).json({ error: 'Database error', details: err.message });
         }
     });
+    app.post('/api/update-read-status', async (req, res) => {
+        const { letterid, readStatus, time } = req.body;
+        
+        if (!letterid || readStatus === undefined || !time) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+        
+        // Call the stored procedure
+        const query = 'CALL update_read($1, $2)';
+        
+        try {
+            // Pass the letterid and time as parameters to the stored procedure
+            await db.query(query, [letterid, time]);
+            res.json({ message: 'Read status updated successfully!' });
+        } catch (err) {
+            console.error('Error updating read status:', err.message);
+            res.status(500).json({ error: 'Database error', details: err.message });
+        }
+    });
+    
     
 };
 
